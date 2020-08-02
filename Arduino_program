@@ -1,0 +1,63 @@
+// include the library code:
+#include <LiquidCrystal.h>
+
+// initialize the library with the numbers of the interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+#define TOTAL_Moles 4
+int totalScore;
+struct Mole
+{
+  int ledPin;
+  int buttonPin;
+};
+
+struct Mole moleArray[TOTAL_Moles] = {
+   {.ledPin = A0, .buttonPin = 6},
+   {.ledPin = A1, .buttonPin = 7},
+   {.ledPin = A2, .buttonPin = 8},
+   {.ledPin = A3, .buttonPin = 9},
+};
+
+void setup()
+{
+             randomSeed(analogRead(A5));
+             pinMode(A0, OUTPUT);   
+             pinMode(A1, OUTPUT);
+             pinMode(A2, OUTPUT);
+             pinMode(A3, OUTPUT);
+             pinMode(6, INPUT_PULLUP);  
+             pinMode(7, INPUT_PULLUP);  
+             pinMode(8, INPUT_PULLUP);
+             pinMode(9, INPUT_PULLUP);  
+  // set up the LCD's number of columns and rows:
+             lcd.begin(16, 2);
+             totalScore = 0;
+}
+
+void use_mole(struct Mole* mole){
+  lcd.clear();
+  lcd.print("Score: " + String(totalScore));
+  digitalWrite(mole->ledPin, HIGH);
+  delay(2000);
+  digitalWrite(mole->ledPin, LOW);
+  lcd.clear();
+  if(digitalRead(mole->buttonPin) == LOW)
+     {
+      lcd.print("You hit the mole..!");
+      totalScore += 1;
+     }
+  else
+     {
+      lcd.print("You failed.");
+      totalScore -= 1;
+     }
+     delay(1500);
+}
+
+void loop() {
+  int r = random(TOTAL_Moles);
+  struct Mole* mole = &moleArray[r];
+  use_mole(mole);
+}
+ 
